@@ -23,7 +23,7 @@ def load_json():
     
 def load_csv():
     
-    csv_file = open('table.csv', 'w', newline='')
+    csv_file = open('business_data.csv', 'w', newline='')
     csv_writer = csv.writer(csv_file)
     return csv_writer
 
