@@ -8,10 +8,11 @@ from dotenv import load_dotenv
 def main():
     
     data = load_json()
+    data = clean_data(data)
     write_csv(data)
     
-    load_dotenv()
-    run_sql()
+    #load_dotenv()
+    #run_sql()
     
     
 def load_json():
@@ -24,6 +25,87 @@ def load_json():
     business_data = json_data['Business']
     
     return business_data
+
+
+def clean_data(data_array):
+    
+    categories = []
+    attributes = []
+    
+    cleaned_data = data_array
+
+    for json in cleaned_data:  
+        
+        json["hours"] = format_hours(json["hours"])
+        
+        new_list = json['categories']
+        
+        for item in new_list:
+            if item not in categories:
+                categories.append(item)
+    
+        new_list = list(json['attributes'])
+        
+        for item in new_list:
+            if item not in attributes:
+                
+                attributes.append(item)
+        
+        if str(json["neighborhoods"]) == "[]":
+            json["neighborhoods"] = "NULL"
+        else:
+            string = json["neighborhoods"]
+            json["neighborhoods"] = str(json["neighborhoods"]).strip("[']")
+            
+    print(len(categories))
+    print(len(attributes))
+            
+    return cleaned_data
+
+    
+def format_hours(hours):
+    
+    new_format_of_hours =  {
+        "sunday_open": {"NULL"},
+        "sunday_close": {"NULL"},
+        "monday_open": {"NULL"},
+        "monday_close": {"NULL"},
+        "tuesday_open": {"NULL"},
+        "tuesday_close": {"NULL"},
+        "wednesday_open": {"NULL"},
+        "wednesday_close": {"NULL"},
+        "thursday_open": {"NULL"},
+        "thursday_close": {"NULL"},
+        "friday_open": {"NULL"},
+        "friday_close": {"NULL"},
+        "saturday_open": {"NULL"},
+        "saturday_close": {"NULL"}
+      }
+    
+    if 'Sunday' in hours:
+        new_format_of_hours['sunday_open'] = str(hours['Sunday']['open'])
+        new_format_of_hours['sunday_close'] = str(hours['Sunday']['close'])
+    if 'Monday' in hours:
+        new_format_of_hours['monday_open'] = str(hours['Monday']['open'])
+        new_format_of_hours['monday_close'] = str(hours['Monday']['close'])
+    if 'Tuesday' in hours:
+        new_format_of_hours['tuesday_open'] = str(hours['Tuesday']['open'])
+        new_format_of_hours['tuesday_close'] = str(hours['Tuesday']['close'])
+    if 'Wednesday' in hours:
+        new_format_of_hours['wednesday_open'] = str(hours['Wednesday']['open'])
+        new_format_of_hours['wednesday_close'] = str(hours['Wednesday']['close'])
+    if 'Thursday' in hours:
+        new_format_of_hours['thursday_open'] = str(hours['Thursday']['open'])
+        new_format_of_hours['thursday_close'] = str(hours['Thursday']['close'])
+    if 'Friday' in hours:
+        new_format_of_hours['friday_open'] = str(hours['Friday']['open'])
+        new_format_of_hours['friday_close'] = str(hours['Friday']['close'])
+    if 'Saturday' in hours:
+        new_format_of_hours['saturday_open'] = str(hours['Saturday']['open'])
+        new_format_of_hours['saturday_close'] = str(hours['Saturday']['close'])   
+        
+    return new_format_of_hours     
+        
     
     
 def load_csv(filename):
@@ -34,14 +116,16 @@ def load_csv(filename):
 
 def write_csv(data):
     
-    business_data_writer = load_csv('business_data.csv')
-    hours_data_writer = load_csv('hours_data.csv')
-    categories_data_writer = load_csv('categories_data.csv')
-    attributes_data_writer = load_csv('attributes_data.csv')
+    business_data_writer = load_csv('csv/business_data.csv')
+    hours_data_writer = load_csv('csv/hours_data.csv')
+    categories_data_writer = load_csv('csv/categories_data.csv')
+    attributes_data_writer = load_csv('csv/attributes_data.csv')
      
     header_row = True
     
     for json in data:
+        #print(json)
+        #print("-------------------------")
         if header_row:
             header = json.keys()
 
@@ -75,7 +159,7 @@ def write_csv(data):
         
         
 def get_data_from_business_csv():
-    csv_file = open('business_data.csv')
+    csv_file = open('csv/business_data.csv')
     csv_reader = csv.reader(csv_file)
     
     header = True
@@ -91,7 +175,7 @@ def get_data_from_business_csv():
 
 
 def get_data_from_hours_csv():
-    csv_file = open('hours_data.csv')
+    csv_file = open('csv/hours_data.csv')
     csv_reader = csv.reader(csv_file)
     
     values = []
@@ -103,7 +187,7 @@ def get_data_from_hours_csv():
 
 
 def get_data_from_categories_csv():
-    csv_file = open('categories_data.csv')
+    csv_file = open('csv/categories_data.csv')
     csv_reader = csv.reader(csv_file)
     
     values = []
@@ -115,7 +199,7 @@ def get_data_from_categories_csv():
 
 
 def get_data_from_attributes_csv():
-    csv_file = open('attributes_data.csv')
+    csv_file = open('csv/attributes_data.csv')
     csv_reader = csv.reader(csv_file)
     
     values = []
